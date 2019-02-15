@@ -1163,7 +1163,6 @@ contains
     if (if_show_dots) then
       call success_mark_
     endif
-    call set_case_name( DEFAULT_CASE_NAME )
   end subroutine add_success
 
   subroutine failed_assert_action (expected, got, message, if_is)
@@ -1188,6 +1187,7 @@ contains
   subroutine set_unit_name_(value)
     character(*), intent(in) :: value
     unit_name = strip(value, MSG_LENGTH)
+    call set_case_name( DEFAULT_CASE_NAME )
   end subroutine set_unit_name_
 
   subroutine get_unit_name_(value)
@@ -1227,7 +1227,6 @@ contains
     if (present(message)) then
        msg = trim(msg) // '; User message: [' // trim(message) // ']'
     endif
-    call set_case_name( DEFAULT_CASE_NAME )
   end subroutine make_error_msg_
 
   function is_last_passed()
