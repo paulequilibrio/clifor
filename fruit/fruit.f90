@@ -928,29 +928,29 @@ contains
     integer :: i
 
 
-    write (stdout,*)
-    write (stdout,*)
-    write (stdout,*) '    Start of FRUIT summary: '
-    write (stdout,*)
+    write (stdout, *)
+    ! write (stdout, *)
+    ! write (stdout, '(a)') 'FRUIT summary: '
+    write (stdout, *)
 
     if (failed_assert_count > 0) then
        write (stdout,*) 'Some tests failed!'
     else
-       write (stdout,*) 'SUCCESSFUL!'
+       write (stdout, '(a)') 'All tests passed!'
     end if
 
-    write (stdout,*)
+    write (stdout, *)
     if ( message_index > 1) then
-       write (stdout,*) '  -- Failed assertion messages:'
+       write (stdout, '(a)') '-- Failed assertion messages:'
 
        do i = 1, message_index - 1
-          write (stdout,"(A)") '   '//trim(strip(message_array(i)))
+          write (stdout, '(a)') '    '//trim(strip(message_array(i)))
        end do
 
-       write (stdout,*) '  -- end of failed assertion messages.'
-       write (stdout,*)
-    else
-       write (stdout,*) '  No messages '
+       write (stdout, '(a)') '-- end of failed assertion messages.'
+       write (stdout, *)
+    ! else
+    !    write (stdout,*) 'No messages '
     end if
 
     if (successful_assert_count + failed_assert_count /= 0) then
@@ -959,24 +959,21 @@ contains
        & successful_case_count,   failed_case_count &
        &)
     end if
-    write (stdout, *) '  -- end of FRUIT summary'
+    ! write (stdout, *) '  -- end of FRUIT summary'
   end subroutine fruit_summary_
 
-  subroutine fruit_summary_table_(&
-  & succ_assert, fail_assert, &
-  & succ_case  , fail_case    &
-  &)
+  subroutine fruit_summary_table_(succ_assert, fail_assert, succ_case, fail_case)
     integer, intent(in) :: succ_assert, fail_assert
     integer, intent(in) :: succ_case  , fail_case
 
-    write (stdout,*) 'Total asserts :   ', succ_assert + fail_assert
-    write (stdout,*) 'Successful    :   ', succ_assert
-    write (stdout,*) 'Failed        :   ', fail_assert
+    write (stdout, '(a,i6)') 'Total asserts  :    ', succ_assert + fail_assert
+    write (stdout, '(a,i6)') 'Successful     :    ', succ_assert
+    write (stdout, '(a,i6)') 'Failed         :    ', fail_assert
     write (stdout,'("Successful rate:   ",f6.2,"%")')  real(succ_assert) * 100.0 / &
          real (succ_assert + fail_assert)
-    write (stdout, *)
-    write (stdout,*) 'Successful asserts / total asserts : [ ',&
-         succ_assert, '/', succ_assert + fail_assert, ' ]'
+    ! write (stdout, *)
+    ! write (stdout, '(a,i6,a,i6,a)') 'Asserts (successful/total) : [ ',&
+    !      succ_assert, ' / ', succ_assert + fail_assert, ' ]'
     ! write (stdout,*) 'Successful cases   / total cases   : [ ', succ_case, '/', &
     !      succ_case + fail_case, ' ]'
   end subroutine fruit_summary_table_
