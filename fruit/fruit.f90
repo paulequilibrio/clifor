@@ -265,6 +265,7 @@ module fruit
   integer, parameter :: MSG_ARRAY_INCREMENT = 50
   integer, parameter :: MAX_MARKS_PER_LINE = 78
 
+  character(*), parameter :: DEFAULT_UNIT_NAME = '_unamed_unit_'
   character(*), parameter :: DEFAULT_CASE_NAME = '_unamed_case_'
   logical, private, parameter :: DEFAULT_CASE_PASSED = .true.
 
@@ -278,8 +279,8 @@ module fruit
 
   character (len = MSG_LENGTH), private, allocatable :: message_array(:)
   character (len = MSG_LENGTH), private, save :: msg = '[unit name not set from set_name]: '
+  character (len = MSG_LENGTH), private, save :: unit_name  = DEFAULT_UNIT_NAME
   character (len = MSG_LENGTH), private, save :: case_name  = DEFAULT_CASE_NAME
-  character (len = MSG_LENGTH), private, save :: unit_name  = '_unamed_unit_'
 
   integer, private, save :: successful_case_count = 0
   integer, private, save :: failed_case_count = 0
@@ -324,8 +325,8 @@ module fruit
     is_last_passed, &
     is_case_passed, &
     add_success, addSuccess, &
-    set_unit_name, get_unit_name, &
-    set_case_name, get_case_name, &
+    set_unit_name, get_unit_name, reset_unit_name, &
+    set_case_name, get_case_name, reset_case_name, &
     failed_assert_action, get_total_count, getTotalCount, &
     get_failed_count, getFailedCount, is_all_successful, isAllSuccessful, &
     run_test_case, runTestCase
@@ -1192,6 +1193,11 @@ contains
     value = strip(unit_name)
   end subroutine get_unit_name_
 
+  subroutine reset_unit_name()
+    unit_name = DEFAULT_UNIT_NAME
+    call reset_case_name
+  end subroutine reset_unit_name
+
   subroutine set_case_name_(value)
     character(*), intent(in) :: value
     case_name = strip(value, MSG_LENGTH)
@@ -1201,6 +1207,10 @@ contains
     character(*), intent(out) :: value
     value = strip(case_name)
   end subroutine get_case_name_
+
+  subroutine reset_case_name()
+    case_name = DEFAULT_CASE_NAME
+  end subroutine reset_case_name
 
   subroutine make_error_msg_ (expected, got, if_is, message)
     character(*), intent(in) :: expected, got
