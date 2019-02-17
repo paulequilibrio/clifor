@@ -929,15 +929,15 @@ contains
   subroutine fruit_summary_
     integer :: i
 
-    write (stdout, *)
+    ! write (stdout, *)
     ! write (stdout, *)
     ! write (stdout, '(a)') 'FRUIT summary: '
-    write (stdout, *)
+    write (stdout, *) NL
 
     if (failed_assert_count > 0) then
-       write (stdout,*) 'Some tests failed!'
+       write (stdout, '(a,i2.2,a)') 'FRUIT: some tests (', failed_assert_count, ') failed!'
     else
-       write (stdout, '(a)') 'All tests passed!'
+       write (stdout, '(a)') 'FRUIT: all tests passed!'
     end if
 
     write (stdout, *)
@@ -945,11 +945,11 @@ contains
        ! write (stdout, '(a)') '-- Failed assertion messages:'
 
        do i = 1, message_index - 1
-          write (stdout, '(a)') ' '//trim(strip(message_array(i)))//NL
+          write (stdout, '(i2,a)') i, ': '//trim(strip(message_array(i)))//NL
        end do
 
        ! write (stdout, '(a)') '-- end of failed assertion messages.'
-       write (stdout, *)
+       ! write (stdout, *)
     ! else
     !    write (stdout,*) 'No messages '
     end if
