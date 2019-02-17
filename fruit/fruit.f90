@@ -241,7 +241,7 @@ module fruit
   implicit none
   private
 
-  character(len=3) :: NL = char(13)//char(11)//char(0)
+  character(len=3) :: NL = achar(13)//achar(11)//achar(0)
   integer, parameter :: STDOUT_DEFAULT = 6
   integer :: stdout   = STDOUT_DEFAULT
 
