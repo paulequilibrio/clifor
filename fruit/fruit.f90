@@ -928,7 +928,6 @@ contains
   subroutine fruit_summary_
     integer :: i
 
-
     write (stdout, *)
     ! write (stdout, *)
     ! write (stdout, '(a)') 'FRUIT summary: '
@@ -942,13 +941,13 @@ contains
 
     write (stdout, *)
     if ( message_index > 1) then
-       write (stdout, '(a)') '-- Failed assertion messages:'
+       ! write (stdout, '(a)') '-- Failed assertion messages:'
 
        do i = 1, message_index - 1
-          write (stdout, '(a)') '    '//trim(strip(message_array(i)))
+          write (stdout, '(a)') ' '//trim(strip(message_array(i)))//NL
        end do
 
-       write (stdout, '(a)') '-- end of failed assertion messages.'
+       ! write (stdout, '(a)') '-- end of failed assertion messages.'
        write (stdout, *)
     ! else
     !    write (stdout,*) 'No messages '
@@ -1209,18 +1208,19 @@ contains
     character(*), intent(in), optional :: message
 
     if (case_name == DEFAULT_CASE_NAME) then
-      msg = '[' // trim(strip(unit_name)) // ']: '
+      msg = '[ ' // trim(strip(unit_name)) // ' ]'//NL
     else
-      msg = '[' // trim(strip(unit_name)) //' / '// trim(strip(case_name)) // ']: '
+      msg = '[ ' // trim(strip(unit_name)) //' / '// trim(strip(case_name)) // ' ]'//NL
     end if
+
     if (if_is) then
-      msg = trim(msg) //     ' Expected'
+      msg = trim(msg) // '         EXPECTED:'
     else
-      msg = trim(msg) // ' Expected Not'
+      msg = trim(msg) // '     EXPECTED NOT:'
     endif
-    msg = trim(msg) // " " // '[' // trim(strip(expected)) // '], '
-    msg = trim(msg) // " " // 'Got'
-    msg = trim(msg) // " " // '[' // trim(strip(got)) // ']'
+    msg = trim(msg) // ' [' // trim(strip(expected)) // ']'//NL
+    msg = trim(msg) // '              GOT:'
+    msg = trim(msg) // ' [' // trim(strip(got)) // ']'
 
     if (present(message)) then
        msg = trim(msg) // '; User message: [' // trim(message) // ']'
