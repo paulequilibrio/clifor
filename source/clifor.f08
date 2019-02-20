@@ -26,11 +26,16 @@ contains
   subroutine clifor_set_program_info(name, version, pretty_name, description)
     character(len=*), intent(in) :: name, version
     character(len=*), intent(in), optional :: pretty_name, description
+    if (index(name, ' ') /= 0) then
+      call clifor_write_error('white space in program executable name (not allowed)')
+      call clifor_finalizer
+      stop
+    end if
     call clifor_program_info%set(name, version, pretty_name, description)
   end subroutine clifor_set_program_info
 
 
-  function clifor_get_program_info() result(info)
+  pure function clifor_get_program_info() result(info)
     type(clifor_type_program_info) :: info
     info = clifor_program_info
   end function clifor_get_program_info
@@ -39,6 +44,7 @@ contains
   subroutine clifor_show_program_version
     call clifor_write_stdout(clifor_program_info%get_version())
     call clifor_finalizer
+    stop
   end subroutine clifor_show_program_version
 
 
