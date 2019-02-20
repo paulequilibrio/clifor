@@ -35,7 +35,7 @@ assert () {
     (*) output="$stdout" ;;
   esac
   assert_equals "$expected" "$output" "$command"
-  [ -n "$verbose" ] && show_ouput $type "$output" || echo -n ''
+  [ -n "$verbose" ] && (show_ouput 'stdout' "'$stdout'"; show_ouput 'stderr' "'$stderr'") || echo -n ''
 }
 
 binary='example'
@@ -43,7 +43,7 @@ verbose='y'
 
 echo -e "Testing $binary\n"
 assert 'stdout' '0.1.0' '-v'
-assert 'stdout' '0.1.0' '--version'
+# assert 'stdout' '0.1.0' '--version'
 # assert 'stdout' '' ''
 # assert 'stderr' '[ ERROR ] invalid option: -' '-'
 # assert 'stderr' '[ ERROR ] invalid option: i' 'i'

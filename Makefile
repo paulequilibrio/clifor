@@ -20,6 +20,10 @@ clifor.obj = $(patsubst %, $(build)/%.o, $(clifor))
 
 default: $(clifor.obj)
 
+# Compile clifor types files
+$(build)/%.o: source/types/%.f08
+	$(fc) $(flags) -c $(<) -o $(@)
+
 # Compile clifor files
 $(build)/%.o: source/%.f08
 	$(fc) $(flags) -c $(<) -o $(@)

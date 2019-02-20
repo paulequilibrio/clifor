@@ -1,17 +1,43 @@
 program fruit_driver
   use fruit
+  use test_clifor_mod_helpers
+  use test_clifor_mod_program_info
+  use test_clifor_mod_option
+  use test_clifor_mod_list
   use test_clifor
+
   call init_fruit(1)
   call fruit_show_dots
 
-  call test_clifor_program_info
 
+  call reset_unit_name
+  call test_clifor_mod_helpers_is_letter
+  call test_clifor_mod_helpers_is_digit
+  call test_clifor_mod_helpers_is_alphanumeric
+  call test_clifor_mod_helpers_has_only_alphanumeric_and_dash
+  call test_clifor_mod_helpers_is_valid_short_name
+  call test_clifor_mod_helpers_is_valid_long_name
   call test_clifor_get_argument
   call test_clifor_get_argument_value
 
-  call test_clifor_isletter
-  call test_clifor_create_option
-  ! call test_clifor_get_option
+  call reset_unit_name
+  call test_clifor_mod_program_info_minimum
+  call test_clifor_mod_program_info_with_pretty_name
+  call test_clifor_mod_program_info_with_description
+  call test_clifor_mod_program_info_with_named_arguments
+
+  call reset_unit_name
+  call test_clifor_mod_option_create_option
+  call test_clifor_mod_option_create_required_option
+  call test_clifor_mod_option_create_need_value_option
+  call test_clifor_mod_option_create_with_named_arguments
+  call test_clifor_mod_option_is_equal
+  call test_clifor_mod_option_is_different
+  ! call test_clifor_mod_option_next
+
+  call reset_unit_name
+  call test_clifor_mod_list_get_head
+  call test_clifor_mod_list_add_first_option
 
 
   call fruit_summary

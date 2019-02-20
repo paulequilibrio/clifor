@@ -25,6 +25,10 @@ example: $(clifor.obj) $(build)/example.o
 $(build)/example.o: example.f08
 	$(fc) $(flags) -c $(<) -o $(@)
 
+# Compile clifor types files
+$(build)/%.o: ../../source/types/%.f08
+	$(fc) $(flags) -c $(<) -o $(@)
+
 # Compile clifor files
 $(build)/%.o: ../../source/%.f08
 	$(fc) $(flags) -c $(<) -o $(@)

@@ -36,6 +36,10 @@ default: $(executable)
 $(executable): $(clifor.obj) $(build)/fruit.o $(test.obj) $(build)/$(driver).o
 	$(fc) $(flags) -o $(@) $(^)
 
+# Compile clifor types files
+$(build)/%.o: $(src)/types/%.$(ext)
+	$(fc) $(flags) -c $(<) -o $(@)
+
 # Compile clifor files
 $(build)/%.o: $(src)/%.$(ext)
 	$(fc) $(flags) -c $(<) -o $(@)
