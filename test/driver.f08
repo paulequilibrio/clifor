@@ -31,9 +31,6 @@ program fruit_driver
   call test_clifor_mod_option_create_required_option
   call test_clifor_mod_option_create_need_value_option
   call test_clifor_mod_option_create_with_named_arguments
-  call test_clifor_mod_option_is_equal
-  call test_clifor_mod_option_is_different
-  ! call test_clifor_mod_option_next
 
   call reset_unit_name
   call test_clifor_mod_list_get_head
