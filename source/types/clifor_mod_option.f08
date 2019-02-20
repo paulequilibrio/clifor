@@ -135,7 +135,7 @@ contains
     class(clifor_type_option), intent(in) :: option
     character(len=*), intent(in) :: short
     logical :: has_short
-    has_short = option%get_short() == '-'//short
+    has_short = option%short == '-'//short
   end function has_short
 
 
@@ -143,7 +143,7 @@ contains
     class(clifor_type_option), intent(in) :: option
     character(len=*), intent(in) :: long
     logical :: has_long
-    has_long = option%get_long() == '--'//long
+    has_long = option%long == '--'//long
   end function has_long
 
 

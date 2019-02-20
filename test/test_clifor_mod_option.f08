@@ -139,6 +139,7 @@ contains
     call set_unit_name('has short')
     call option%set('i', 'input', 'description')
     call assert_equals(.true., option%has_short('i'))
+    call assert_equals(.false., option%has_short('o'))
   end subroutine test_clifor_mod_option_has_short
 
 
@@ -149,6 +150,7 @@ contains
     call set_unit_name('has long')
     call option%set('o', 'output', 'description')
     call assert_equals(.true., option%has_long('output'))
+    call assert_equals(.false., option%has_long('input'))
   end subroutine test_clifor_mod_option_has_long
 
 end module test_clifor_mod_option
