@@ -1,6 +1,5 @@
 module test_clifor_mod_option
   use fruit
-  use clifor_mod_helpers, only: TAB
 
   implicit none
 
@@ -131,5 +130,25 @@ contains
     call set_case_name('to_string')
     call assert_equals('*-m, --model <MODEL>, Model to use', option%to_string())
   end subroutine test_clifor_mod_option_create_with_named_arguments
+
+
+  subroutine test_clifor_mod_option_has_short
+    use clifor_mod_option, only: clifor_type_option
+    type(clifor_type_option) :: option
+
+    call set_unit_name('has short')
+    call option%set('i', 'input', 'description')
+    call assert_equals(.true., option%has_short('i'))
+  end subroutine test_clifor_mod_option_has_short
+
+
+  subroutine test_clifor_mod_option_has_long
+    use clifor_mod_option, only: clifor_type_option
+    type(clifor_type_option) :: option
+
+    call set_unit_name('has long')
+    call option%set('o', 'output', 'description')
+    call assert_equals(.true., option%has_long('output'))
+  end subroutine test_clifor_mod_option_has_long
 
 end module test_clifor_mod_option
