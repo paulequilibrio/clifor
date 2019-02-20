@@ -1,6 +1,7 @@
 module test_clifor_mod_option
   use fruit
   use clifor_mod_helpers, only: TAB
+
   implicit none
 
 contains

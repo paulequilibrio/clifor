@@ -1,12 +1,12 @@
 module clifor_mod_helpers
   use clifor_mod_write
+
   implicit none
 
   character(len=1), parameter :: TAB = achar(9)
   character(len=3), parameter :: NL = achar(10)//achar(13)//achar(0)
 
 contains
-
 
   function clifor_is_letter(char) result(is_letter)
     character(len=1), intent(in) :: char

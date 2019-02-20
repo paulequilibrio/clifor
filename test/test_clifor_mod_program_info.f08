@@ -1,5 +1,6 @@
 module test_clifor_mod_program_info
   use fruit
+
   implicit none
 
 contains

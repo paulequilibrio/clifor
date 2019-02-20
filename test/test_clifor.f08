@@ -1,5 +1,6 @@
 module test_clifor
   use fruit
+
   implicit none
 
 contains

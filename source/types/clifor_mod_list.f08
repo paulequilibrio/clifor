@@ -2,7 +2,9 @@ module clifor_mod_list
 
   implicit none
 
-  type :: clifor_type_node
+  private
+
+  type, public :: clifor_type_node
     private
     class(*), pointer :: data => null()
     type(clifor_type_node), pointer :: previous => null()
@@ -15,12 +17,7 @@ module clifor_mod_list
     final :: node_finalizer
   end type clifor_type_node
 
-  private &
-    node_get_data, node_get_previous, node_get_next, &
-    node_deallocate, node_finalizer
-
-
-  type :: clifor_type_list
+  type, public :: clifor_type_list
     private
     integer :: length = 0
     type(clifor_type_node), pointer :: head => null()
@@ -35,34 +32,15 @@ module clifor_mod_list
     final :: list_finalizer
   end type clifor_type_list
 
-  private &
-    list_get_head, &
-    list_length, &
-    list_add_node, &
-    list_for_each, &
-    list_deallocate, &
-    list_finalizer
-    ! list_filter, &
-
-
   abstract interface
     subroutine iterator_each(node, done)
       import :: clifor_type_node
       type(clifor_type_node), intent(inout), pointer  :: node
       logical, intent(out) :: done
     end subroutine iterator_each
-
-    ! subroutine iterator_filter(value, node, done)
-    !   import :: clifor_type_node
-    !   class(*), intent(in), pointer :: value
-    !   type(clifor_type_node), intent(inout), pointer  :: node
-    !   logical, intent(out) :: done
-    ! end subroutine iterator_filter
   end interface
 
 contains
-
-! LIST PROCEDURES
 
   subroutine list_for_each(list, subroutine_each)
     class(clifor_type_list), intent(inout) :: list
@@ -81,44 +59,6 @@ contains
       end if
     end do
   end subroutine list_for_each
-
-
-  ! subroutine list_filter(list, subroutine_filter)
-  !   class(clifor_type_list), intent(inout) :: list
-  !   procedure(iterator_filter)  :: subroutine_filter
-  !   class(*), pointer :: value
-  !   type(clifor_type_node), pointer :: node
-  !   logical :: done
-  !   done = .false.
-  !   node => list%head
-  !   do
-  !     if (associated(node)) then
-  !       call subroutine_filter(value, node, done)
-  !       if (done) exit
-  !       node => node%next
-  !     else
-  !       exit
-  !     end if
-  !   end do
-  ! end subroutine list_filter
-
-
-  ! subroutine show_all(list)
-  !   class(clifor_type_list), intent(inout) :: list
-  !   write(*, '(a,i2,a)') NL//'=> The list has ', list%length, ' items:'//NL
-  !   call list%for_each(show)
-  ! end subroutine show_all
-  !
-  ! ! Can't be here
-  ! subroutine show(actual_node, done)
-  !   type(clifor_type_node), intent(inout), pointer :: actual_node
-  !   logical, intent(out) :: done
-  !   done = .false.
-  !   select type (item => actual_node%data)
-  !   type is (clifor_type_option)
-  !     write(*,'(a)') item%to_string()
-  !   end select
-  ! end subroutine show
 
 
   function list_get_head(list) result(head)
@@ -184,9 +124,6 @@ contains
     call list%deallocate
   end subroutine list_finalizer
 
-
-
-! NODE PROCEDURES
 
   function node_get_data(node) result(data)
     class(clifor_type_node), intent(in) :: node

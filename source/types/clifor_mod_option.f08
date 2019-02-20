@@ -1,6 +1,9 @@
 module clifor_mod_option
   use clifor_mod_helpers
+
   implicit none
+
+  private
 
   type, public :: clifor_type_option
     private
@@ -19,8 +22,6 @@ module clifor_mod_option
     procedure to_string_write
     generic :: write(unformatted) => to_string_write
   end type clifor_type_option
-
-  private
 
 contains
 

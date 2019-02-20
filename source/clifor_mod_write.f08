@@ -1,5 +1,6 @@
 module clifor_mod_write
   use, intrinsic :: iso_fortran_env, only: output_unit, error_unit
+
   implicit none
 
   private clifor_write
