@@ -110,12 +110,12 @@ contains
       if (associated(node)) then
         previous => node%previous
         call node%deallocate
-        list%length = list%length - 1
         node => previous
       else
         exit
       end if
     end do
+    list%length = 0
   end subroutine list_deallocate
 
 
