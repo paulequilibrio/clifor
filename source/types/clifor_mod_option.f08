@@ -19,8 +19,8 @@ module clifor_mod_option
     procedure :: get_short, get_long, get_description
     procedure :: get_required, get_need_value, get_value_name
     procedure :: has_short, has_long
-    procedure :: to_string, to_string_write
-    generic :: write(formatted) => to_string_write
+    procedure :: to_string
+    generic :: write(formatted) => to_string
   end type clifor_type_option
 
 contains
@@ -126,28 +126,7 @@ contains
   end function has_long
 
 
-  pure function to_string(option) result(string)
-    class(clifor_type_option), intent(in) :: option
-    character :: required
-    character(len=:), allocatable :: temp, name, string
-
-    allocate(character(0) :: temp)
-    temp = option%short//', '//option%long
-
-    required = merge('*', ' ', option%required)
-
-    allocate(character(0) :: name)
-    if (option%need_value) then
-      name = temp//' '//option%value_name
-    else
-      name = temp
-    end if
-
-    string = required//name//', '//option%description
-  end function to_string
-
-
-  subroutine to_string_write(option, unit, iotype, format, iostat, iomsg)
+  subroutine to_string(option, unit, iotype, format, iostat, iomsg)
     class(clifor_type_option), intent(in) :: option
     integer, intent(in) :: unit
     character(len=*), intent(in) :: iotype
@@ -156,38 +135,28 @@ contains
     character(len=*), intent(inout) :: iomsg
     character :: required
     character(len=:), allocatable :: value_name, formated
-    character(len=32) :: fmt, base = '(2(a2,1x),'
+    character(len=32) :: fmt
 
     required = merge('*', ' ', option%required)
 
     allocate(character(0) :: value_name)
     if (option%need_value) then
       value_name = option%value_name
-      fmt = 'a,2(1x,a)'
+      fmt = 'a,1x,a'
     else
       value_name = ''
-      fmt = 'a,1x,2a'
+      fmt = '2a'
     end if
 
-    if (iotype == 'DT') then
-      select case (size(format))
-        case (1)
-          write(fmt, '(a,i2.2,a)') &
-            'a', format(1), ',2(1x,a)'
-        case (2)
-          write(fmt, '(a,2(i2.2,a))') &
-            'a', format(1), ',1x,a', format(2), ',1x,a'
-        case (3)
-          write(fmt, '(3(a,i2.2))') &
-            'a', format(1), ',1x,a', format(2), ',1x,a', format(3)
-      end select
+    if (iotype == 'DT' .and. size(format) == 1) then
+      write(fmt, '(a,i2.2,a)') 'a,1x,tr', format(1), ',a'
     end if
 
     allocate(character(0)::formated)
-    formated = trim(base) // trim(fmt) // ')'
+    formated = '(2(a2,1x),a,1x,' // trim(fmt) // ')'
 
     write(unit, fmt=formated, iostat=iostat, iomsg=iomsg) &
-      required, option%short, adjustl(option%long), value_name, option%description
-  end subroutine to_string_write
+      required, option%short, option%long, value_name, option%description
+  end subroutine to_string
 
 end module clifor_mod_option
