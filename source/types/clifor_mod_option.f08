@@ -17,10 +17,10 @@ module clifor_mod_option
   contains
     procedure :: set => create_new_option
     procedure :: get_short, get_long, get_description
-    procedure :: get_required, get_need_value, get_value_name, to_string
+    procedure :: get_required, get_need_value, get_value_name
     procedure :: has_short, has_long
-    procedure to_string_write
-    generic :: write(unformatted) => to_string_write
+    procedure :: to_string, to_string_write
+    generic :: write(formatted) => to_string_write
   end type clifor_type_option
 
 contains
@@ -110,6 +110,22 @@ contains
   end function get_value_name
 
 
+  pure function has_short(option, short)
+    class(clifor_type_option), intent(in) :: option
+    character(len=*), intent(in) :: short
+    logical :: has_short
+    has_short = option%short == '-'//short
+  end function has_short
+
+
+  pure function has_long(option, long)
+    class(clifor_type_option), intent(in) :: option
+    character(len=*), intent(in) :: long
+    logical :: has_long
+    has_long = option%long == '--'//long
+  end function has_long
+
+
   pure function to_string(option) result(string)
     class(clifor_type_option), intent(in) :: option
     character :: required
@@ -131,28 +147,28 @@ contains
   end function to_string
 
 
-  pure function has_short(option, short)
-    class(clifor_type_option), intent(in) :: option
-    character(len=*), intent(in) :: short
-    logical :: has_short
-    has_short = option%short == '-'//short
-  end function has_short
-
-
-  pure function has_long(option, long)
-    class(clifor_type_option), intent(in) :: option
-    character(len=*), intent(in) :: long
-    logical :: has_long
-    has_long = option%long == '--'//long
-  end function has_long
-
-
-  subroutine to_string_write(option, unit, iostat, iomsg)
+  subroutine to_string_write(option, unit, iotype, format, iostat, iomsg)
     class(clifor_type_option), intent(in) :: option
     integer, intent(in) :: unit
+    character(len=*), intent(in) :: iotype
+    integer, intent(in) :: format(:)
     integer, intent(out) :: iostat
     character(len=*), intent(inout) :: iomsg
-    write(unit, iostat=iostat, iomsg=iomsg) option%to_string()
+    character(len=:), allocatable :: formated
+    character(len=4) :: fmt
+    integer :: i
+
+    allocate(character(0)::formated)
+    formated = '(a'
+    if (iotype == 'DT') then
+      do i=1, size(format)
+        write(fmt, '(a,i2.2)') ',i', format(i)
+        formated = formated // fmt
+      end do
+    end if
+    formated = formated // ')'
+
+    write(unit, fmt=formated, iostat=iostat, iomsg=iomsg) option%to_string(), len(option%long), len(option%description)
   end subroutine to_string_write
 
 end module clifor_mod_option
