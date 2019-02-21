@@ -154,21 +154,40 @@ contains
     integer, intent(in) :: format(:)
     integer, intent(out) :: iostat
     character(len=*), intent(inout) :: iomsg
-    character(len=:), allocatable :: formated
-    character(len=4) :: fmt
-    integer :: i
+    character :: required
+    character(len=:), allocatable :: value_name, formated
+    character(len=32) :: fmt, base = '(2(a2,1x),'
+
+    required = merge('*', ' ', option%required)
+
+    allocate(character(0) :: value_name)
+    if (option%need_value) then
+      value_name = option%value_name
+      fmt = 'a,2(1x,a)'
+    else
+      value_name = ''
+      fmt = 'a,1x,2a'
+    end if
+
+    if (iotype == 'DT') then
+      select case (size(format))
+        case (1)
+          write(fmt, '(a,i2.2,a)') &
+            'a', format(1), ',2(1x,a)'
+        case (2)
+          write(fmt, '(a,2(i2.2,a))') &
+            'a', format(1), ',1x,a', format(2), ',1x,a'
+        case (3)
+          write(fmt, '(3(a,i2.2))') &
+            'a', format(1), ',1x,a', format(2), ',1x,a', format(3)
+      end select
+    end if
 
     allocate(character(0)::formated)
-    formated = '(a'
-    if (iotype == 'DT') then
-      do i=1, size(format)
-        write(fmt, '(a,i2.2)') ',i', format(i)
-        formated = formated // fmt
-      end do
-    end if
-    formated = formated // ')'
+    formated = trim(base) // trim(fmt) // ')'
 
-    write(unit, fmt=formated, iostat=iostat, iomsg=iomsg) option%to_string(), len(option%long), len(option%description)
+    write(unit, fmt=formated, iostat=iostat, iomsg=iomsg) &
+      required, option%short, adjustl(option%long), value_name, option%description
   end subroutine to_string_write
 
 end module clifor_mod_option
