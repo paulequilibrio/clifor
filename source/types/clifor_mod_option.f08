@@ -17,7 +17,7 @@ module clifor_mod_option
   contains
     procedure :: set => create_new_option
     procedure :: get_short, get_long, get_description
-    procedure :: get_required, get_need_value, get_value_name
+    procedure :: get_required, get_need_value, get_value_name, get_name_length
     procedure :: has_short, has_long
     procedure :: to_string
     generic :: write(formatted) => to_string
@@ -108,6 +108,17 @@ contains
     character(len=:), allocatable :: value_name
     value_name = option%value_name
   end function get_value_name
+
+
+  pure function get_name_length(option) result(length)
+    class(clifor_type_option), intent(in) :: option
+    integer :: length
+    if (option%need_value) then
+      length = 2 + len(option%short//', '//option%long//' '//option%value_name)
+    else
+      length = 2 + len(option%short//', '//option%long)
+    end if
+  end function get_name_length
 
 
   pure function has_short(option, short)
