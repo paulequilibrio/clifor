@@ -127,37 +127,30 @@ contains
   end subroutine clifor_show_program_help
 
 
+  ! IDEA: move to clifor_mod_option
   subroutine print_to_help(node, done)
-    type(clifor_type_node), intent(inout), pointer :: node
+    type(clifor_type_node), intent(in), pointer :: node
     logical, intent(out) :: done
-    character(len=largest_option_name) :: name
-    character :: required
-    character(len=:), allocatable :: line
+    character(len=16) :: fmt
     done = .false.
-    allocate(character(0) :: line)
     select type (option => node%get_data())
       type is (clifor_type_option)
-        name = option%get_short()//', '//option%get_long()//' '//option%get_value_name()
-        required = merge('*', ' ', option%get_required())
-        line = name//'    '//required//' '//option%get_description()
-        call clifor_write_stdout(line, '(t3, a)')
+        write(fmt, '(a,i3.3,a)') '(2x,dt(', largest_option_name, ',4))'
+        write(*, fmt) option
     end select
-    deallocate(line)
   end subroutine print_to_help
 
 
   subroutine get_largest_option_name(node, done)
-    type(clifor_type_node), intent(inout), pointer :: node
+    type(clifor_type_node), intent(in), pointer :: node
     logical, intent(out) :: done
-    character(len=:), allocatable :: name
+    integer :: length
     done = .false.
-    allocate(character(0) :: name)
     select type (option => node%get_data())
       type is (clifor_type_option)
-        name = option%get_short()//', '//option%get_long()//' '//option%get_value_name()
-        if (len(name) > largest_option_name) largest_option_name = len(name)
+        length = option%get_name_length()
+        if (length > largest_option_name) largest_option_name = length
     end select
-    deallocate(name)
   end subroutine get_largest_option_name
 
 end module clifor

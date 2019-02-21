@@ -156,9 +156,9 @@ contains
       name_length = merge(format(1), name_length, format(1) > name_length)
       select case (size(format))
         case (1)
-          write(fmt, '(a,i2.2,a)') 'a', name_length, ',1x,a'
+          write(fmt, '(a,i3.3,a)') 'a', name_length, ',1x,a'
         case (2)
-          write(fmt, '(2(a,i2.2),a)') 'a', name_length, ',1x,tr', format(2), ',a'
+          write(fmt, '(2(a,i3.3),a)') 'a', name_length, ',1x,tr', format(2), ',a'
       end select
     end if
 
