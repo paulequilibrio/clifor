@@ -145,29 +145,37 @@ contains
     integer, intent(out) :: iostat
     character(len=*), intent(inout) :: iomsg
     character :: required
-    character(len=:), allocatable :: value_name, formated
+    character(len=:), allocatable :: formated, name
     character(len=32) :: fmt
+    integer :: name_length
 
     required = merge('*', ' ', option%required)
+    name_length = option%get_name_length()
+    fmt = 'a,1x,a'
 
-    allocate(character(0) :: value_name)
+    if (iotype == 'DT') then
+      name_length = merge(format(1), name_length, format(1) > name_length)
+      select case (size(format))
+        case (1)
+          write(fmt, '(a,i2.2,a)') 'a', name_length, ',1x,a'
+        case (2)
+          write(fmt, '(2(a,i2.2),a)') 'a', name_length, ',1x,tr', format(2), ',a'
+      end select
+    end if
+
+    allocate(character(len=name_length) :: name)
+
     if (option%need_value) then
-      value_name = option%value_name
-      fmt = 'a,1x,a'
+      write(name, '(a)') required//' '//option%short//', '//option%long//' '//option%value_name
     else
-      value_name = ''
-      fmt = '2a'
+      write(name, '(a)') required//' '//option%short//', '//option%long
     end if
 
-    if (iotype == 'DT' .and. size(format) == 1) then
-      write(fmt, '(a,i2.2,a)') 'a,1x,tr', format(1), ',a'
-    end if
+    allocate(character(len=2+len(trim(fmt))) :: formated)
+    formated = '(' // trim(fmt) // ')'
 
-    allocate(character(0)::formated)
-    formated = '(2(a2,1x),a,1x,' // trim(fmt) // ')'
-
-    write(unit, fmt=formated, iostat=iostat, iomsg=iomsg) &
-      required, option%short, option%long, value_name, option%description
+    write(unit, fmt=formated, iostat=iostat, iomsg=iomsg) name, option%description
+    write(*,*) formated
   end subroutine to_string
 
 end module clifor_mod_option
