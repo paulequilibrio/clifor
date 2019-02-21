@@ -146,10 +146,9 @@ contains
     character(len=*), intent(inout) :: iomsg
     character :: required
     character(len=:), allocatable :: formated, name
-    character(len=32) :: fmt
+    character(len=16) :: fmt
     integer :: name_length
 
-    required = merge('*', ' ', option%required)
     name_length = option%get_name_length()
     fmt = 'a,1x,a'
 
@@ -164,7 +163,7 @@ contains
     end if
 
     allocate(character(len=name_length) :: name)
-
+    required = merge('*', ' ', option%required)
     if (option%need_value) then
       write(name, '(a)') required//' '//option%short//', '//option%long//' '//option%value_name
     else
@@ -173,9 +172,7 @@ contains
 
     allocate(character(len=2+len(trim(fmt))) :: formated)
     formated = '(' // trim(fmt) // ')'
-
     write(unit, fmt=formated, iostat=iostat, iomsg=iomsg) name, option%description
-    write(*,*) formated
   end subroutine to_string
 
 end module clifor_mod_option
