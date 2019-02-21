@@ -29,9 +29,6 @@ contains
 
     call set_case_name('value_name')
     call assert_equals('', option%get_value_name())
-
-    call set_case_name('to_string')
-    call assert_equals('-l, --long, description', option%to_string())
   end subroutine test_clifor_mod_option_create_option
 
 
@@ -59,9 +56,6 @@ contains
 
     call set_case_name('value_name')
     call assert_equals('', option%get_value_name())
-
-    call set_case_name('to_string')
-    call assert_equals('*-r, --required, required option', option%to_string())
   end subroutine test_clifor_mod_option_create_required_option
 
 
@@ -89,9 +83,6 @@ contains
 
     call set_case_name('value_name')
     call assert_equals('<PATH>', option%get_value_name())
-
-    call set_case_name('to_string')
-    call assert_equals('*-i, --input-file <PATH>, Path to file with input data', option%to_string())
   end subroutine test_clifor_mod_option_create_need_value_option
 
 
@@ -126,9 +117,6 @@ contains
 
     call set_case_name('value_name')
     call assert_equals('<MODEL>', option%get_value_name())
-
-    call set_case_name('to_string')
-    call assert_equals('*-m, --model <MODEL>, Model to use', option%to_string())
   end subroutine test_clifor_mod_option_create_with_named_arguments
 
 
