@@ -6,22 +6,16 @@ module clifor
 
   implicit none
 
-  type(clifor_type_program_info) :: clifor_program_info
+  type(clifor_type_program_info), protected :: clifor_program_info
   type(clifor_type_list) :: clifor_options
-  integer :: largest_option_name
+  integer, protected :: clifor_largest_option_name
+  integer :: clifor_description_shift
 
   private &
-    largest_option_name, &
     get_largest_option_name, &
     print_to_help
 
 contains
-
-  subroutine clifor_finalizer
-    call clifor_options%deallocate
-    ! stop
-  end subroutine clifor_finalizer
-
 
   subroutine clifor_set_program_info(name, version, pretty_name, description)
     character(len=*), intent(in) :: name, version
@@ -54,10 +48,12 @@ contains
     character(len=*), intent(in), optional :: value_name
     type(clifor_type_option) :: option
     call option%set(short, long, description, required, need_value, value_name)
-    if (.not. already_exist(option)) call clifor_options%add(option)
+    ! if (.not. already_exist(option))
+    call clifor_options%add(option)
   end subroutine clifor_create_option
 
 
+  ! TODO: refactor using short_already_exist and long_already_exist
   function already_exist(option) result(exist)
     type(clifor_type_option), intent(in) :: option
     type(clifor_type_node), pointer :: node
@@ -85,58 +81,87 @@ contains
   end function already_exist
 
 
+  function short_already_exist(short) result(exist)
+    character(len=*), intent(in) :: short
+    logical :: exist
+    exist = .false.
+    call clifor_options%for_each(check_short)
+  contains
+    subroutine check_short(node, done)
+      type(clifor_type_node), intent(in), pointer :: node
+      logical, intent(out) :: done
+      select type(option => node%get_data())
+        type is(clifor_type_option)
+          exist = option%has_short(short)
+          done = exist
+      end select
+    end subroutine check_short
+  end function short_already_exist
 
+
+  function long_already_exist(long) result(exist)
+    character(len=*), intent(in) :: long
+    logical :: exist
+    call clifor_options%for_each(check_long)
+  contains
+    subroutine check_long(node, done)
+      type(clifor_type_node), intent(in), pointer :: node
+      logical, intent(out) :: done
+      select type(option => node%get_data())
+        type is(clifor_type_option)
+          exist = option%has_long(long)
+          done = exist
+      end select
+    end subroutine check_long
+  end function long_already_exist
+
+
+  ! TODO: refactor and create get_option and get_value
   function clifor_option_is_present(name) result(present)
     character(len=*), intent(in) :: name
     logical :: present
-    present = .false.
+    present = short_already_exist(name)
     ! call clifor_options%filter(is_present)
   end function clifor_option_is_present
 
 
-  subroutine is_present(value, node, done)
-    class(*), intent(in), pointer :: value
-    type(clifor_type_node), intent(inout), pointer :: node
-    logical, intent(out) :: done
-    done = .false.
-  end subroutine is_present
+  ! subroutine is_present(value, node, done)
+  !   class(*), intent(in), pointer :: value
+  !   type(clifor_type_node), intent(inout), pointer :: node
+  !   logical, intent(out) :: done
+  !   done = .false.
+  ! end subroutine is_present
 
 
   ! TODO: improve clifor_show_program_usage
   subroutine clifor_show_program_usage
-    call clifor_write_stdout('Usage: '//clifor_program_info%get_name()//' [options]'//NL)
+    call clifor_write_stdout('Usage: '//clifor_program_info%get_name()//' [options]')
   end subroutine clifor_show_program_usage
 
 
   subroutine clifor_show_program_help
-    character(len=:), allocatable :: name
-    type(clifor_type_program_info) :: i
-    i = clifor_program_info
-    allocate(character(0) :: name)
-    name = i%get_name()
-    if (i%get_pretty_name() /= '') name = i%get_pretty_name()
-
-    call clifor_write_stdout(name//' (v'//i%get_version()//') - '//i%get_description()//NL)
+    call clifor_program_info%print
+    write(*, *)
     call clifor_show_program_usage
-    call clifor_write_stdout('Available options (* = required):'//NL)
-
-    largest_option_name = 0
+    write(*, *)
+    call clifor_write_stdout('Options (*required):'//NL)
+    clifor_largest_option_name = 0
     call clifor_options%for_each(get_largest_option_name)
     call clifor_options%for_each(print_to_help)
     call clifor_finalizer
   end subroutine clifor_show_program_help
 
 
-  ! IDEA: move to clifor_mod_option
   subroutine print_to_help(node, done)
     type(clifor_type_node), intent(in), pointer :: node
     logical, intent(out) :: done
-    character(len=16) :: fmt
+    integer :: i
     done = .false.
     select type (option => node%get_data())
       type is (clifor_type_option)
-        write(fmt, '(a,i3.3,a)') '(2x,dt(', largest_option_name, ',4))'
-        write(*, fmt) option
+        i = clifor_description_shift
+        clifor_description_shift = merge(i, 4, i > 0)
+        call option%print(clifor_largest_option_name, clifor_description_shift)
     end select
   end subroutine print_to_help
 
@@ -149,8 +174,41 @@ contains
     select type (option => node%get_data())
       type is (clifor_type_option)
         length = option%get_name_length()
-        if (length > largest_option_name) largest_option_name = length
+        if (length > clifor_largest_option_name) clifor_largest_option_name = length
     end select
   end subroutine get_largest_option_name
+
+
+  subroutine show_all(list_name)
+    type(clifor_type_list), intent(in), optional :: list_name
+    type(clifor_type_list) :: list
+
+    list = merge(list_name, clifor_options, present(list_name))
+
+    if (list%len() == 0) then
+      call clifor_write_stdout('Empty list')
+    else
+      call list%for_each(show)
+    end if
+
+  contains
+
+    subroutine show(node, done)
+      type(clifor_type_node), intent(in), pointer :: node
+      logical, intent(out) :: done
+      done = .false.
+      select type (option => node%get_data())
+        type is (clifor_type_option)
+          write(*,*) option
+      end select
+    end subroutine show
+
+  end subroutine show_all
+
+
+  subroutine clifor_finalizer
+    call clifor_options%deallocate
+    ! stop
+  end subroutine clifor_finalizer
 
 end module clifor
