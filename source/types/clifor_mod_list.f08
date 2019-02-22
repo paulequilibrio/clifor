@@ -27,7 +27,6 @@ module clifor_mod_list
     procedure :: len => list_length
     procedure :: add => list_add_node
     procedure :: for_each => list_for_each
-    ! procedure :: filter => list_filter
     procedure :: deallocate => list_deallocate
     final :: list_finalizer
   end type clifor_type_list
@@ -35,20 +34,59 @@ module clifor_mod_list
   abstract interface
     subroutine iterator_each(node, done)
       import :: clifor_type_node
-      type(clifor_type_node), intent(inout), pointer  :: node
+      type(clifor_type_node), intent(in), pointer  :: node
       logical, intent(out) :: done
     end subroutine iterator_each
   end interface
 
 contains
 
+
+  function node_get_data(node) result(data)
+    class(clifor_type_node), intent(in) :: node
+    class(*), pointer :: data
+    data => node%data
+  end function node_get_data
+
+
+  function node_get_previous(node) result(previous)
+    class(clifor_type_node) :: node
+    type(clifor_type_node), pointer :: previous
+    previous => node%previous
+  end function node_get_previous
+
+
+  function node_get_next(node) result(next)
+    class(clifor_type_node) :: node
+    type(clifor_type_node), pointer :: next
+    next => node%next
+  end function node_get_next
+
+
+  subroutine node_deallocate(node)
+    class(clifor_type_node), intent(inout) :: node
+    if (associated(node%data)) deallocate(node%data)
+    nullify(node%data)
+  end subroutine node_deallocate
+
+
+  subroutine node_finalizer(node)
+    type(clifor_type_node), intent(inout) :: node
+    call node%deallocate
+  end subroutine node_finalizer
+
+
   subroutine list_for_each(list, subroutine_each)
-    class(clifor_type_list), intent(inout) :: list
+    class(clifor_type_list), intent(in) :: list
     procedure(iterator_each)  :: subroutine_each
     type(clifor_type_node), pointer :: node
     logical :: done
+
+    if (.not. associated(list%head)) return
+
     done = .false.
     node => list%head
+
     do
       if (associated(node)) then
         call subroutine_each(node, done)
@@ -58,13 +96,14 @@ contains
         exit
       end if
     end do
+
+    nullify(node)
   end subroutine list_for_each
 
 
   function list_get_head(list) result(head)
     class(clifor_type_list) :: list
     type(clifor_type_node), pointer :: head
-    ! allocate(head, source=list%head)
     head => list%head
   end function list_get_head
 
@@ -104,7 +143,6 @@ contains
   subroutine list_deallocate(list)
     class(clifor_type_list), intent(inout) :: list
     type(clifor_type_node), pointer :: node, previous
-    ! write(*,'(a)') 'Deallocating LIST...'
     node => list%tail
     do
       if (associated(node)) then
@@ -115,6 +153,8 @@ contains
         exit
       end if
     end do
+    nullify(list%head)
+    nullify(list%tail)
     list%length = 0
   end subroutine list_deallocate
 
@@ -124,43 +164,5 @@ contains
     call list%deallocate
   end subroutine list_finalizer
 
-
-  function node_get_data(node) result(data)
-    class(clifor_type_node), intent(in) :: node
-    class(*), pointer :: data
-    data => node%data
-  end function node_get_data
-
-
-  function node_get_previous(node) result(previous)
-    class(clifor_type_node) :: node
-    type(clifor_type_node), pointer :: previous
-    previous => node%previous
-  end function node_get_previous
-
-
-  function node_get_next(node) result(next)
-    class(clifor_type_node) :: node
-    type(clifor_type_node), pointer :: next
-    next => node%next
-  end function node_get_next
-
-
-  subroutine node_deallocate(node)
-    class(clifor_type_node), intent(inout) :: node
-    ! write(*,'(a)') 'Deallocating NODE...'
-    if (associated(node%data)) deallocate(node%data)
-    ! if (associated(node%previous)) deallocate(node%previous)
-    ! if (associated(node%next)) deallocate(node%next)
-    nullify(node%previous)
-    nullify(node%next)
-    nullify(node%data)
-  end subroutine node_deallocate
-
-
-  subroutine node_finalizer(node)
-    type(clifor_type_node), intent(inout) :: node
-    call node%deallocate
-  end subroutine node_finalizer
 
 end module clifor_mod_list
