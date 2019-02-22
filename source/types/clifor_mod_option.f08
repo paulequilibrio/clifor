@@ -19,8 +19,8 @@ module clifor_mod_option
     procedure :: get_short, get_long, get_description
     procedure :: get_required, get_need_value, get_value_name, get_name_length
     procedure :: has_short, has_long
-    procedure :: to_string
-    generic :: write(formatted) => to_string
+    procedure :: write
+    generic :: write(formatted) => write
   end type clifor_type_option
 
 contains
@@ -137,7 +137,7 @@ contains
   end function has_long
 
 
-  subroutine to_string(option, unit, iotype, format, iostat, iomsg)
+  subroutine write(option, unit, iotype, format, iostat, iomsg)
     class(clifor_type_option), intent(in) :: option
     integer, intent(in) :: unit
     character(len=*), intent(in) :: iotype
@@ -145,7 +145,7 @@ contains
     integer, intent(out) :: iostat
     character(len=*), intent(inout) :: iomsg
     character :: required
-    character(len=:), allocatable :: formated, name
+    character(len=:), allocatable :: formatted, name
     character(len=16) :: fmt
     integer :: name_length
 
@@ -170,9 +170,9 @@ contains
       write(name, '(a)') required//' '//option%short//', '//option%long
     end if
 
-    allocate(character(len=2+len(trim(fmt))) :: formated)
-    formated = '(' // trim(fmt) // ')'
-    write(unit, fmt=formated, iostat=iostat, iomsg=iomsg) name, option%description
-  end subroutine to_string
+    allocate(character(len=2+len(trim(fmt))) :: formatted)
+    formatted = '(' // trim(fmt) // ')'
+    write(unit, fmt=formatted, iostat=iostat, iomsg=iomsg) name, option%description
+  end subroutine write
 
 end module clifor_mod_option
