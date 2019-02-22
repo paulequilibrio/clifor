@@ -17,9 +17,10 @@ module clifor_mod_option
   contains
     procedure :: set => create_new_option
     procedure :: get_short, get_long, get_description
-    procedure :: get_required, get_need_value, get_value_name, get_name_length
+    procedure :: get_required, get_need_value, get_value_name
     procedure :: has_short, has_long
-    procedure :: write
+    procedure :: get_name, get_name_length
+    procedure :: write, print
     generic :: write(formatted) => write
   end type clifor_type_option
 
@@ -110,14 +111,23 @@ contains
   end function get_value_name
 
 
+  pure function get_name(option) result(name)
+    class(clifor_type_option), intent(in) :: option
+    character(len=:), allocatable :: name
+    character :: required
+    required = merge('*', ' ', option%required)
+    if (option%need_value) then
+      name = required//' '//option%short//', '//option%long//' '//option%value_name
+    else
+      name = required//' '//option%short//', '//option%long
+    end if
+  end function get_name
+
+
   pure function get_name_length(option) result(length)
     class(clifor_type_option), intent(in) :: option
     integer :: length
-    if (option%need_value) then
-      length = 2 + len(option%short//', '//option%long//' '//option%value_name)
-    else
-      length = 2 + len(option%short//', '//option%long)
-    end if
+    length = len(option%get_name())
   end function get_name_length
 
 
@@ -144,7 +154,6 @@ contains
     integer, intent(in) :: format(:)
     integer, intent(out) :: iostat
     character(len=*), intent(inout) :: iomsg
-    character :: required
     character(len=:), allocatable :: formatted, name
     character(len=16) :: fmt
     integer :: name_length
@@ -162,17 +171,25 @@ contains
       end select
     end if
 
-    allocate(character(len=name_length) :: name)
-    required = merge('*', ' ', option%required)
-    if (option%need_value) then
-      write(name, '(a)') required//' '//option%short//', '//option%long//' '//option%value_name
-    else
-      write(name, '(a)') required//' '//option%short//', '//option%long
-    end if
-
     allocate(character(len=2+len(trim(fmt))) :: formatted)
     formatted = '(' // trim(fmt) // ')'
+
+    allocate(character(len=name_length) :: name)
+    write(name, '(a)') option%get_name()
+
     write(unit, fmt=formatted, iostat=iostat, iomsg=iomsg) name, option%description
+
+    deallocate(formatted, name)
   end subroutine write
+
+
+  subroutine print(option, name_length, description_shift)
+    class(clifor_type_option), intent(in) :: option
+    integer, intent(in) :: name_length, description_shift
+    character(len=16) :: format
+    write(format, '(2(a,i3.3),a)') '(2x,dt(', name_length, ',', description_shift, '))'
+    write(*, format) option
+  end subroutine print
+
 
 end module clifor_mod_option
