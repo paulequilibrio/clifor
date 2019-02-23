@@ -163,12 +163,12 @@ contains
     fmt = 'a,1x,a'
 
     if (iotype == 'DT') then
-      name_length = merge(format(1), name_length, format(1) > name_length)
       select case (size(format))
         case (1)
-          write(fmt, '(a,i3.3,a)') 'a', name_length, ',1x,a'
+          write(fmt, '(a,i3.3,a)') 'a,tr', format(1), ',a'
         case (2)
-          write(fmt, '(2(a,i3.3),a)') 'a', name_length, ',1x,tr', format(2), ',a'
+          name_length = merge(format(2), name_length, format(2) > name_length)
+          write(fmt, '(2(a,i3.3),a)') 'a', name_length, ',tr', format(1), ',a'
       end select
     end if
 
@@ -184,11 +184,21 @@ contains
   end subroutine write
 
 
-  subroutine print(option, name_length, description_shift)
+  subroutine print(option, description_shift, name_length)
     class(clifor_type_option), intent(in) :: option
-    integer, intent(in) :: name_length, description_shift
+    integer, intent(in), optional :: description_shift, name_length
     character(len=16) :: format
-    write(format, '(2(a,i3.3),a)') '(2x,dt(', name_length, ',', description_shift, '))'
+
+    if (present(description_shift)) then
+      if (present(name_length)) then
+        write(format, '(2(a,i3.3),a)') '(2x,dt(', description_shift, ',', name_length, '))'
+      else
+        write(format, '(a,i3.3,a)') '(2x,dt(', description_shift, '))'
+      end if
+    else
+      write(format, '(a)') '(2x,dt)'
+    end if
+
     write(*, format) option
   end subroutine print
 

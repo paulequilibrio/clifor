@@ -161,7 +161,7 @@ contains
       type is (clifor_type_option)
         i = clifor_description_shift
         clifor_description_shift = merge(i, 4, i > 0)
-        call option%print(clifor_largest_option_name, clifor_description_shift)
+        call option%print(clifor_description_shift, clifor_largest_option_name)
     end select
   end subroutine print_to_help
 
