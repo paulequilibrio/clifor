@@ -141,4 +141,41 @@ contains
     call assert_equals(.false., option%has_long('input'))
   end subroutine test_clifor_mod_option_has_long
 
+
+  subroutine test_clifor_mod_option_provided
+    use clifor_mod_option, only: clifor_type_option
+    type(clifor_type_option) :: flag, option
+    call set_unit_name('provided')
+
+    call set_case_name('flag')
+    call flag%set('q', 'quiet', 'Omit output')
+    call assert_equals(.false., flag%get_provided())
+    call flag%set_provided(.true.)
+    call assert_equals(.true., flag%get_provided())
+
+    call set_case_name('need value')
+    call option%set('i', 'input', 'Input value', need_value=.true.)
+    call assert_equals(.false., option%get_provided())
+    call option%set_provided(.true.)
+    call assert_equals(.true., option%get_provided())
+  end subroutine test_clifor_mod_option_provided
+
+
+  subroutine test_clifor_mod_option_value
+    use clifor_mod_option, only: clifor_type_option
+    type(clifor_type_option) :: option, flag
+    call set_unit_name('option value')
+
+    call set_case_name('need value')
+    call option%set('i', 'input', 'Input file', need_value=.true.)
+    call option%set_value('input.json')
+    call assert_equals('input.json', option%get_value())
+
+    call set_case_name('flag')
+    call flag%set('f', 'flag', 'Some control flag', need_value=.false.)
+    call flag%set_value('something')
+    call assert_equals('', flag%get_value())
+  end subroutine test_clifor_mod_option_value
+
+
 end module test_clifor_mod_option

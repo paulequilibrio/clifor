@@ -12,7 +12,7 @@ module clifor_mod_option
     character(len=:), allocatable :: long, description, value_name
     logical :: required, need_value
     ! maybe set when process
-    logical :: provided
+    logical :: provided = .false.
     character(len=:), allocatable :: value
   contains
     procedure :: set => create_new_option
@@ -22,6 +22,7 @@ module clifor_mod_option
     procedure :: get_name, get_name_length
     procedure :: write, print
     generic :: write(formatted) => write
+    procedure :: set_provided, get_provided, set_value, get_value
   end type clifor_type_option
 
 contains
@@ -190,6 +191,38 @@ contains
     write(format, '(2(a,i3.3),a)') '(2x,dt(', name_length, ',', description_shift, '))'
     write(*, format) option
   end subroutine print
+
+
+  subroutine set_provided(option, provided)
+    class(clifor_type_option), intent(inout) :: option
+    logical, intent(in) :: provided
+    option%provided = provided
+  end subroutine set_provided
+
+
+  pure function get_provided(option) result(provided)
+    class(clifor_type_option), intent(in) :: option
+    logical :: provided
+    provided = option%provided
+  end function get_provided
+
+
+  subroutine set_value(option, value)
+    class(clifor_type_option), intent(inout) :: option
+    character(len=*), intent(in) :: value
+    if (option%need_value) option%value = value
+  end subroutine set_value
+
+
+  pure function get_value(option) result(value)
+    class(clifor_type_option), intent(in) :: option
+    character(len=:), allocatable :: value
+    if (option%need_value) then
+      value = option%value
+    else
+      value = ''
+    end if
+  end function get_value
 
 
 end module clifor_mod_option

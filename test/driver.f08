@@ -33,6 +33,8 @@ program fruit_driver
   call test_clifor_mod_option_create_with_named_arguments
   call test_clifor_mod_option_has_short
   call test_clifor_mod_option_has_long
+  call test_clifor_mod_option_provided
+  call test_clifor_mod_option_value
 
   call reset_unit_name
   call test_clifor_mod_list_get_head
