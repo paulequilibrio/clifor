@@ -48,37 +48,34 @@ contains
     character(len=*), intent(in), optional :: value_name
     type(clifor_type_option) :: option
     call option%set(short, long, description, required, need_value, value_name)
-    ! if (.not. already_exist(option))
+    call check_if_already_created(option)
     call clifor_options%add(option)
   end subroutine clifor_create_option
 
 
-  ! TODO: refactor using short_already_exist and long_already_exist
-  function already_exist(option) result(exist)
+  subroutine check_if_already_created(option)
     type(clifor_type_option), intent(in) :: option
-    type(clifor_type_node), pointer :: node
-    logical :: exist
-    node => clifor_options%get_head()
-    exist = .false.
-    do
-      if(.not. associated(node)) exit
-      select type (data => node%get_data())
-        type is (clifor_type_option)
+    call clifor_options%for_each(already_created)
+  contains
+    subroutine already_created(node, done)
+      type(clifor_type_node), intent(in), pointer :: node
+      logical, intent(out) :: done
+      select type(data => node%get_data())
+        type is(clifor_type_option)
           if (option%get_short() == data%get_short()) then
-            call clifor_write_error('Duplicated short option name: '//option%get_short())
-            exist = .true.
+            call clifor_write_error('It is not allowed to create two options with the same short name: '//option%get_short())
+            done = .true.
           elseif (option%get_long() == data%get_long()) then
-            call clifor_write_error('Duplicated long option name: '//option%get_long())
-            exist = .true.
+            call clifor_write_error('It is not allowed to create two options with the same long name: '//option%get_long())
+            done = .true.
           end if
       end select
-      if (exist) then
+      if (done) then
         call clifor_finalizer
         stop
       end if
-      node => node%get_next()
-    end do
-  end function already_exist
+    end subroutine already_created
+  end subroutine check_if_already_created
 
 
   function short_already_exist(short) result(exist)
