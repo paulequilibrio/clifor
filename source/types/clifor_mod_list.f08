@@ -34,7 +34,7 @@ module clifor_mod_list
   abstract interface
     subroutine iterator_each(node, done)
       import :: clifor_type_node
-      type(clifor_type_node), intent(in), pointer  :: node
+      type(clifor_type_node), intent(inout), pointer  :: node
       logical, intent(out) :: done
     end subroutine iterator_each
   end interface

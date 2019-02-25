@@ -12,6 +12,7 @@ module clifor
   integer :: clifor_description_shift
 
   private &
+    check_if_already_created, &
     get_largest_option_name, &
     print_to_help
 
@@ -58,7 +59,7 @@ contains
     call clifor_options%for_each(already_created)
   contains
     subroutine already_created(node, done)
-      type(clifor_type_node), intent(in), pointer :: node
+      type(clifor_type_node), intent(inout), pointer :: node
       logical, intent(out) :: done
       select type(data => node%get_data())
         type is(clifor_type_option)
@@ -85,7 +86,7 @@ contains
     call clifor_options%for_each(check_short)
   contains
     subroutine check_short(node, done)
-      type(clifor_type_node), intent(in), pointer :: node
+      type(clifor_type_node), intent(inout), pointer :: node
       logical, intent(out) :: done
       select type(option => node%get_data())
         type is(clifor_type_option)
@@ -102,7 +103,7 @@ contains
     call clifor_options%for_each(check_long)
   contains
     subroutine check_long(node, done)
-      type(clifor_type_node), intent(in), pointer :: node
+      type(clifor_type_node), intent(inout), pointer :: node
       logical, intent(out) :: done
       select type(option => node%get_data())
         type is(clifor_type_option)
@@ -145,12 +146,12 @@ contains
     clifor_largest_option_name = 0
     call clifor_options%for_each(get_largest_option_name)
     call clifor_options%for_each(print_to_help)
-    call clifor_finalizer
+    call clifor_stop
   end subroutine clifor_show_program_help
 
 
   subroutine print_to_help(node, done)
-    type(clifor_type_node), intent(in), pointer :: node
+    type(clifor_type_node), intent(inout), pointer :: node
     logical, intent(out) :: done
     integer :: i
     done = .false.
@@ -164,7 +165,7 @@ contains
 
 
   subroutine get_largest_option_name(node, done)
-    type(clifor_type_node), intent(in), pointer :: node
+    type(clifor_type_node), intent(inout), pointer :: node
     logical, intent(out) :: done
     integer :: length
     done = .false.
@@ -191,7 +192,7 @@ contains
   contains
 
     subroutine show(node, done)
-      type(clifor_type_node), intent(in), pointer :: node
+      type(clifor_type_node), intent(inout), pointer :: node
       logical, intent(out) :: done
       done = .false.
       select type (option => node%get_data())
@@ -205,7 +206,13 @@ contains
 
   subroutine clifor_finalizer
     call clifor_options%deallocate
-    ! stop
   end subroutine clifor_finalizer
+
+
+  subroutine clifor_stop
+    call clifor_options%deallocate
+    stop
+  end subroutine clifor_stop
+
 
 end module clifor
