@@ -114,21 +114,87 @@ contains
   end function long_already_exist
 
 
-  ! TODO: refactor and create get_option and get_value
-  function clifor_option_is_present(name) result(present)
-    character(len=*), intent(in) :: name
-    logical :: present
-    present = short_already_exist(name)
-    ! call clifor_options%filter(is_present)
-  end function clifor_option_is_present
+  subroutine clifor_read_command_line
+    integer :: total, index
+    character(len=:), allocatable :: argument, value
+    type(clifor_type_option), pointer :: option
 
+    total = command_argument_count()
+    index = 1
 
-  ! subroutine is_present(value, node, done)
-  !   class(*), intent(in), pointer :: value
-  !   type(clifor_type_node), intent(inout), pointer :: node
-  !   logical, intent(out) :: done
-  !   done = .false.
-  ! end subroutine is_present
+    do
+      if (index > total) exit
+      argument = clifor_get_argument(index)
+
+      if (len(argument) < 2) then
+        call clifor_write_warning('Too short option name: '//argument)
+        call clifor_stop
+      end if
+
+      call clifor_options%for_each(check_provided)
+
+      if (.not. associated(option)) then
+        call clifor_write_error('Invalid option: '//argument)
+        call clifor_stop
+      end if
+
+      if (option%get_provided()) then
+        call clifor_write_error('Duplicated option: '//argument)
+        call clifor_stop
+      end if
+
+      call option%set_provided(.true.)
+
+      if (option%get_need_value()) then
+
+        if (index + 1 > total) then
+          call clifor_write_error("Missing value for option "//argument//" "//option%get_value_name())
+          call clifor_stop
+        end if
+
+        value = clifor_get_argument(index + 1)
+
+        if (value(1:1) == '-') then
+          call clifor_write_error("Missing value for option "//argument//" "//option%get_value_name())
+          call clifor_stop
+        end if
+
+        call option%set_value(value)
+        index = index + 2
+      else
+        index = index + 1
+      end if
+
+      ! write(*,*) option%get_short(), ': [', option%get_provided(), '] ', option%get_value()
+      nullify(option)
+    end do
+    ! write(*, *) ''
+
+  contains
+    subroutine check_provided(node, done)
+      type(clifor_type_node), intent(inout), pointer :: node
+      logical, intent(out) :: done
+      class(*), pointer :: actual_option
+      actual_option => node%get_data()
+      select type(actual_option)
+        type is(clifor_type_option)
+          if (argument(1:2) == '--') then
+            if (actual_option%has_long(argument(3:))) then
+              option => actual_option
+              done = .true.
+            end if
+          elseif (argument(1:1) == '-') then
+            if (actual_option%has_short(argument(2:))) then
+              option => actual_option
+              done = .true.
+            end if
+          else
+            call clifor_write_warning('Option not starting with dash(-): '//argument)
+            call clifor_stop
+          end if
+      end select
+    end subroutine check_provided
+  end subroutine clifor_read_command_line
 
 
   ! TODO: improve clifor_show_program_usage
