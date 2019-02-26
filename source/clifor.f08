@@ -316,4 +316,23 @@ contains
   end function clifor_flag_was_provided
 
 
+  function clifor_get_value_from_option(name) result(value)
+    character(len=*), intent(in) :: name
+    character(len=:), allocatable :: value
+    call clifor_options%for_each(get_value)
+  contains
+    subroutine get_value(node, done)
+      type(clifor_type_node), intent(inout), pointer :: node
+      logical, intent(out) :: done
+      select type(option => node%get_data())
+      type is(clifor_type_option)
+        if (option%has_short(name) .or. option%has_long(name)) then
+          value = option%get_value()
+          done = .true.
+        end if
+      end select
+    end subroutine get_value
+  end function clifor_get_value_from_option
+
+
 end module clifor
