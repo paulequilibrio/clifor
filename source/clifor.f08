@@ -146,16 +146,15 @@ contains
       call option%set_provided(.true.)
 
       if (option%get_need_value()) then
-
         if (index + 1 > total) then
-          call clifor_write_error("Missing value for option "//argument//" "//option%get_value_name())
+          call clifor_write_error("Missing required value for option: "//argument//" "//option%get_value_name())
           call clifor_stop
         end if
 
         value = clifor_get_argument(index + 1)
 
         if (value(1:1) == '-') then
-          call clifor_write_error("Missing value for option "//argument//" "//option%get_value_name())
+          call clifor_write_error("Missing required value for option: "//argument//" "//option%get_value_name())
           call clifor_stop
         end if
 
@@ -165,10 +164,10 @@ contains
         index = index + 1
       end if
 
-      ! write(*,*) option%get_short(), ': [', option%get_provided(), '] ', option%get_value()
       nullify(option)
     end do
-    ! write(*, *) ''
+
+    call clifor_options%for_each(required_was_provided)
 
   contains
     subroutine check_provided(node, done)
@@ -194,6 +193,19 @@ contains
           end if
       end select
     end subroutine check_provided
+
+    subroutine required_was_provided(node, done)
+      type(clifor_type_node), intent(inout), pointer :: node
+      logical, intent(out) :: done
+      done = .false.
+      select type(option => node%get_data())
+        type is(clifor_type_option)
+          if (option%get_required() .and. .not. option%get_provided()) then
+            call clifor_write_error('Missing required option: '//option%get_short()//' ('//option%get_long()//')')
+            call clifor_stop
+          end if
+      end select
+    end subroutine required_was_provided
   end subroutine clifor_read_command_line
 
 
