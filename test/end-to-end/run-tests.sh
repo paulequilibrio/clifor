@@ -28,8 +28,8 @@ assert () {
   expected="$2"
   options="$3"
   command="./$binary $options"
-  stdout="$($command 2>/tmp/clifor_stderr)"
-  stderr="$(cat </tmp/clifor_stderr)"
+  stderr="$($command 2>&1 >/tmp/clifor_stdout)"
+  stdout="$(cat /tmp/clifor_stdout | tr -d \\0)"
   case $type in
     ('stderr') output="$stderr" ;;
     (*) output="$stdout" ;;
@@ -39,17 +39,19 @@ assert () {
 }
 
 binary='example'
-verbose='y'
-
 echo -e "Testing $binary\n"
+
+assert 'stderr' '' ''
+assert 'stdout' '' ''
+assert 'stdout' '0.1.0' '--version'
 assert 'stdout' '0.1.0' '-v'
-# assert 'stdout' '0.1.0' '--version'
-# assert 'stdout' '' ''
-# assert 'stderr' '[ ERROR ] invalid option: -' '-'
-# assert 'stderr' '[ ERROR ] invalid option: i' 'i'
-# assert 'stdout' 'help' '-h'
-# assert 'stdout' 'help' '--help'
-# assert 'stderr' 'example' '--input-file -b -c -i -j -zap -o --cla - -- -v'
+assert 'stderr' '' '--help'
+assert 'stderr' '' '-h'
+assert 'stderr' '' '-i a -o b'
+assert 'stderr' '[ ERROR ] Unknow option: -' '-'
+assert 'stderr' '[ ERROR ] Unknow option: i' 'i'
+assert 'stderr' '[ ERROR ] Missing required value for option: -i <FILEPATH>' '-i'
+verbose='y'
 
 
 
