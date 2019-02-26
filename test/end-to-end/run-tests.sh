@@ -25,8 +25,8 @@ assert_equals () {
 assert () {
   local type expected options output command
   type="$1"
-  expected="$2"
-  options="$3"
+  options="$2"
+  expected="$3"
   command="./$binary $options"
   stderr="$($command 2>&1 >/tmp/clifor_stdout)"
   stdout="$(cat /tmp/clifor_stdout | tr -d \\0)"
@@ -41,16 +41,18 @@ assert () {
 binary='example'
 echo -e "Testing $binary\n"
 
-assert 'stderr' '' ''
+assert 'stderr' '' '[ ERROR ] Missing required option: -i (--input-file)'
+assert 'stderr' '-' '[ ERROR ] Unknow option: -'
+assert 'stderr' 'i' '[ ERROR ] Unknow option: i'
+assert 'stderr' '-i' '[ ERROR ] Missing required value for option: -i <FILEPATH>'
+assert 'stderr' '-i a' '[ ERROR ] Missing required option: -o (--output-file)'
 assert 'stdout' '' ''
-assert 'stdout' '0.1.0' '--version'
-assert 'stdout' '0.1.0' '-v'
-assert 'stderr' '' '--help'
-assert 'stderr' '' '-h'
-assert 'stderr' '' '-i a -o b'
-assert 'stderr' '[ ERROR ] Unknow option: -' '-'
-assert 'stderr' '[ ERROR ] Unknow option: i' 'i'
-assert 'stderr' '[ ERROR ] Missing required value for option: -i <FILEPATH>' '-i'
+assert 'stdout' '--version' '0.1.0'
+assert 'stdout' '-v' '0.1.0'
+assert 'stderr' '--help' ''
+assert 'stderr' '-h' ''
+assert 'stdout' '-i a -o b --quiet' ''
+assert 'stdout' '-i a -o b' 'input: a, output: b'
 verbose='y'
 
 
