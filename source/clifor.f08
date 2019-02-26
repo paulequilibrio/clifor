@@ -167,8 +167,6 @@ contains
       nullify(option)
     end do
 
-    call clifor_options%for_each(required_was_provided)
-
   contains
     subroutine check_provided(node, done)
       type(clifor_type_node), intent(inout), pointer :: node
@@ -193,7 +191,12 @@ contains
           end if
       end select
     end subroutine check_provided
+  end subroutine clifor_read_command_line
 
+
+  subroutine clifor_ensure_required_options
+    call clifor_options%for_each(required_was_provided)
+  contains
     subroutine required_was_provided(node, done)
       type(clifor_type_node), intent(inout), pointer :: node
       logical, intent(out) :: done
@@ -206,7 +209,7 @@ contains
           end if
       end select
     end subroutine required_was_provided
-  end subroutine clifor_read_command_line
+  end subroutine clifor_ensure_required_options
 
 
   ! TODO: improve clifor_show_program_usage
