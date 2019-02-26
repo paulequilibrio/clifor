@@ -127,7 +127,7 @@ contains
       argument = clifor_get_argument(index)
 
       if (len(argument) < 2) then
-        call clifor_write_warning('Too short option name: '//argument)
+        call clifor_write_error('Unknow option: '//argument)
         call clifor_stop
       end if
 
@@ -189,7 +189,7 @@ contains
               done = .true.
             end if
           else
-            call clifor_write_warning('Option not starting with dash(-): '//argument)
+            call clifor_write_error('Option not starting with dash(-): '//argument)
             call clifor_stop
           end if
       end select
