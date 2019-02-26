@@ -281,4 +281,24 @@ contains
   end subroutine clifor_stop
 
 
+  function clifor_flag_was_provided(flag_name) result(provided)
+    character(len=*), intent(in) :: flag_name
+    logical :: provided
+    provided = .false.
+    call clifor_options%for_each(is_provided)
+  contains
+    subroutine is_provided(node, done)
+      type(clifor_type_node), intent(inout), pointer :: node
+      logical, intent(out) :: done
+      select type(option => node%get_data())
+        type is(clifor_type_option)
+          if (option%has_short(flag_name) .or. option%has_long(flag_name)) then
+            provided = option%get_provided()
+            done = .true.
+          end if
+      end select
+    end subroutine is_provided
+  end function clifor_flag_was_provided
+
+
 end module clifor
