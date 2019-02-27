@@ -1,13 +1,12 @@
 # Build directory path
-# build = ../build
-build = ./build
+build = ../build
 # Fortran Compiler
 fc = gfortran
 # Fortran Compiler flags
 # -J specifies where to put .mod files for compiled modules
 development_flags = -J$(build) -std=f2008 -pedantic -Wall -Wextra -Wimplicit-interface -fPIC -fmax-errors=1 -g -fcheck=all -fbacktrace
-production_falgs  = -J$(build) -std=f2008 -pedantic -Wall -Wextra -Wimplicit-interface -fPIC -Werror -fmax-errors=1 -O3 -march=native -ffast-math -funroll-loops
-flags = $(development_flags)
+production_flags  = -J$(build) -std=f2008 -pedantic -Wall -Wextra -Wimplicit-interface -fPIC -Werror -fmax-errors=1 -O3 -march=native -ffast-math -funroll-loops
+flags = $(production_flags)
 
 # If not exist, create build directory
 $(shell mkdir -p $(build))
@@ -19,10 +18,6 @@ clifor.obj = $(patsubst %, $(build)/%.o, $(clifor))
 
 
 default: $(clifor.obj)
-
-# Compile clifor types files
-$(build)/%.o: source/types/%.f08
-	$(fc) $(flags) -c $(<) -o $(@)
 
 # Compile clifor files
 $(build)/%.o: source/%.f08
