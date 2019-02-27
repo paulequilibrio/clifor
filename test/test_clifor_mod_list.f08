@@ -1,12 +1,13 @@
-module test_clifor_mod_list
+module test_clifor_mod_type_list
   use fruit
 
   implicit none
 
 contains
 
-  subroutine test_clifor_mod_list_get_head
-    use clifor_mod_list, only: clifor_type_node, clifor_type_list
+  subroutine test_clifor_mod_type_list_get_head
+    use clifor_mod_type_list, only: clifor_type_node, clifor_type_list
+    use clifor, only: show_all
     type(clifor_type_node) :: head
     type(clifor_type_list) :: list
     call set_unit_name('list get head')
@@ -14,12 +15,14 @@ contains
     ! head = list%get_head()
     ! call assert_equals(.false., associated(head))
     call assert_equals(0, list%len())
-  end subroutine test_clifor_mod_list_get_head
+    ! call show_all(list)
+  end subroutine test_clifor_mod_type_list_get_head
 
 
-  subroutine test_clifor_mod_list_add_first_option
-    use clifor_mod_list, only: clifor_type_node, clifor_type_list
-    use clifor_mod_option, only: clifor_type_option
+  subroutine test_clifor_mod_type_list_add_first_option
+    use clifor_mod_type_list, only: clifor_type_node, clifor_type_list
+    use clifor_mod_type_option, only: clifor_type_option
+    use clifor, only: show_all
     type(clifor_type_option) :: option
     type(clifor_type_node) :: head, node
     type(clifor_type_list) :: list
@@ -40,7 +43,6 @@ contains
     call list%add(option)
     call option%set('z', 'zz', '')
     call list%add(option)
-    ! call list%show_all()
 
     call set_case_name('list head has no next')
     ! head = list%get_head()
@@ -48,7 +50,7 @@ contains
     ! call assert_equals(.false., head%has_next())
     ! ! call assert_equals(.true., option == option2)
     !
-    ! call list%show_all()
-  end subroutine test_clifor_mod_list_add_first_option
+    ! call show_all(list)
+  end subroutine test_clifor_mod_type_list_add_first_option
 
-end module test_clifor_mod_list
+end module test_clifor_mod_type_list

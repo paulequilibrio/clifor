@@ -1,4 +1,4 @@
-module clifor_mod_option
+module clifor_mod_type_option
   use clifor_mod_helpers
 
   implicit none
@@ -235,4 +235,4 @@ contains
   end function get_value
 
 
-end module clifor_mod_option
+end module clifor_mod_type_option

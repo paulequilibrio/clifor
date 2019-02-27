@@ -1,8 +1,8 @@
 module clifor
   use clifor_mod_helpers
-  use clifor_mod_program_info
-  use clifor_mod_option
-  use clifor_mod_list
+  use clifor_mod_type_program_info
+  use clifor_mod_type_option
+  use clifor_mod_type_list
 
   implicit none
 

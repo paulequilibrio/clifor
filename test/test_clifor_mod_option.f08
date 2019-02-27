@@ -1,16 +1,30 @@
-module test_clifor_mod_option
+module test_clifor_mod_type_option
   use fruit
 
   implicit none
 
 contains
 
-  subroutine test_clifor_mod_option_create_option
-    use clifor_mod_option, only: clifor_type_option
+  subroutine test_clifor_mod_type_option_create_option
+    use clifor_mod_type_option, only: clifor_type_option
     type(clifor_type_option) :: option
 
     call set_unit_name('create new option')
     call option%set('l', 'long', 'description')
+
+    ! write(*,*)
+    ! write(*, *) 'unformat:', option
+    ! call option%set('l', 'long', 'descripti12345678', required=.true., need_value=.true.)
+    ! write(*, *) 'unformat:', option
+    !
+    ! write(*, '(a,dt(1,30))') 'formatted: ', option
+    ! call option%set('l', 'long', 'description', need_value=.true.)
+    ! write(*, '(a,dt(1,30))') 'formatted: ', option
+    ! write(*, '(a,dt(1,30))') 'formatted: ', option
+    ! call option%set('l', 'long', 'description', need_value=.true., value_name='long long value')
+    ! write(*, '(a,dt(1,30))') 'formatted: ', option
+    ! call option%set('l', 'long', 'description', need_value=.true., value_name='long long value', required=.true.)
+    ! write(*, '(a,dt(1,30))') 'formatted: ', option
 
     call set_case_name('short')
     call assert_equals('-l', option%get_short())
@@ -29,11 +43,11 @@ contains
 
     call set_case_name('value_name')
     call assert_equals('', option%get_value_name())
-  end subroutine test_clifor_mod_option_create_option
+  end subroutine test_clifor_mod_type_option_create_option
 
 
-  subroutine test_clifor_mod_option_create_required_option
-    use clifor_mod_option, only: clifor_type_option
+  subroutine test_clifor_mod_type_option_create_required_option
+    use clifor_mod_type_option, only: clifor_type_option
     type(clifor_type_option) :: option
 
     call set_unit_name('create required option')
@@ -56,11 +70,11 @@ contains
 
     call set_case_name('value_name')
     call assert_equals('', option%get_value_name())
-  end subroutine test_clifor_mod_option_create_required_option
+  end subroutine test_clifor_mod_type_option_create_required_option
 
 
-  subroutine test_clifor_mod_option_create_need_value_option
-    use clifor_mod_option, only: clifor_type_option
+  subroutine test_clifor_mod_type_option_create_need_value_option
+    use clifor_mod_type_option, only: clifor_type_option
     type(clifor_type_option) :: option
 
     call set_unit_name('create value option')
@@ -83,11 +97,11 @@ contains
 
     call set_case_name('value_name')
     call assert_equals('<PATH>', option%get_value_name())
-  end subroutine test_clifor_mod_option_create_need_value_option
+  end subroutine test_clifor_mod_type_option_create_need_value_option
 
 
-  subroutine test_clifor_mod_option_create_with_named_arguments
-    use clifor_mod_option, only: clifor_type_option
+  subroutine test_clifor_mod_type_option_create_with_named_arguments
+    use clifor_mod_type_option, only: clifor_type_option
     type(clifor_type_option) :: option
 
     call set_unit_name('with named arguments')
@@ -117,33 +131,33 @@ contains
 
     call set_case_name('value_name')
     call assert_equals('<MODEL>', option%get_value_name())
-  end subroutine test_clifor_mod_option_create_with_named_arguments
+  end subroutine test_clifor_mod_type_option_create_with_named_arguments
 
 
-  subroutine test_clifor_mod_option_has_short
-    use clifor_mod_option, only: clifor_type_option
+  subroutine test_clifor_mod_type_option_has_short
+    use clifor_mod_type_option, only: clifor_type_option
     type(clifor_type_option) :: option
 
     call set_unit_name('has short')
     call option%set('i', 'input', 'description')
     call assert_equals(.true., option%has_short('i'))
     call assert_equals(.false., option%has_short('o'))
-  end subroutine test_clifor_mod_option_has_short
+  end subroutine test_clifor_mod_type_option_has_short
 
 
-  subroutine test_clifor_mod_option_has_long
-    use clifor_mod_option, only: clifor_type_option
+  subroutine test_clifor_mod_type_option_has_long
+    use clifor_mod_type_option, only: clifor_type_option
     type(clifor_type_option) :: option
 
     call set_unit_name('has long')
     call option%set('o', 'output', 'description')
     call assert_equals(.true., option%has_long('output'))
     call assert_equals(.false., option%has_long('input'))
-  end subroutine test_clifor_mod_option_has_long
+  end subroutine test_clifor_mod_type_option_has_long
 
 
-  subroutine test_clifor_mod_option_provided
-    use clifor_mod_option, only: clifor_type_option
+  subroutine test_clifor_mod_type_option_provided
+    use clifor_mod_type_option, only: clifor_type_option
     type(clifor_type_option) :: flag, option
     call set_unit_name('provided')
 
@@ -158,11 +172,11 @@ contains
     call assert_equals(.false., option%get_provided())
     call option%set_provided(.true.)
     call assert_equals(.true., option%get_provided())
-  end subroutine test_clifor_mod_option_provided
+  end subroutine test_clifor_mod_type_option_provided
 
 
-  subroutine test_clifor_mod_option_value
-    use clifor_mod_option, only: clifor_type_option
+  subroutine test_clifor_mod_type_option_value
+    use clifor_mod_type_option, only: clifor_type_option
     type(clifor_type_option) :: option, flag
     call set_unit_name('option value')
 
@@ -175,7 +189,7 @@ contains
     call flag%set('f', 'flag', 'Some control flag', need_value=.false.)
     call flag%set_value('something')
     call assert_equals('', flag%get_value())
-  end subroutine test_clifor_mod_option_value
+  end subroutine test_clifor_mod_type_option_value
 
 
-end module test_clifor_mod_option
+end module test_clifor_mod_type_option

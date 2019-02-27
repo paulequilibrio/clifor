@@ -1,4 +1,4 @@
-module clifor_mod_list
+module clifor_mod_type_list
 
   implicit none
 
@@ -165,4 +165,4 @@ contains
   end subroutine list_finalizer
 
 
-end module clifor_mod_list
+end module clifor_mod_type_list

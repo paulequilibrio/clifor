@@ -1,4 +1,4 @@
-module clifor_mod_program_info
+module clifor_mod_type_program_info
 
   implicit none
 
@@ -81,4 +81,4 @@ contains
     write(*, '(dt)') info
   end subroutine print
 
-end module clifor_mod_program_info
+end module clifor_mod_type_program_info
