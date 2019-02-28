@@ -17,8 +17,8 @@ program fruit_driver
   call test_clifor_mod_helpers_has_only_alphanumeric_and_dash
   call test_clifor_mod_helpers_is_valid_short_name
   call test_clifor_mod_helpers_is_valid_long_name
-  call test_clifor_get_argument
-  call test_clifor_get_argument_value
+  call test_clifor_mod_helpers_get_argument
+  call test_clifor_mod_helpers_get_argument_value
 
   call reset_unit_name
   call test_clifor_mod_type_program_info_minimum

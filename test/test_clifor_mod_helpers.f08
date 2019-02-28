@@ -111,4 +111,22 @@ contains
     call assert_equals(.false., clifor_is_valid_long_name('fail or not'))
   end subroutine test_clifor_mod_helpers_is_valid_long_name
 
+
+  subroutine test_clifor_mod_helpers_get_argument
+    use clifor_mod_helpers, only: clifor_get_argument
+    call set_unit_name('get argument')
+    call assert_equals('./driver.bin', clifor_get_argument(0))
+  end subroutine test_clifor_mod_helpers_get_argument
+
+
+  subroutine test_clifor_mod_helpers_get_argument_value
+    use clifor_mod_helpers, only: clifor_get_argument_value
+    call set_unit_name('get argument value')
+    call set_case_name('-i')
+    call assert_equals ('./data/input.json', clifor_get_argument_value('-i'))
+    call set_case_name('-o')
+    call assert_equals ('./data/output.json', clifor_get_argument_value('-o'))
+  end subroutine test_clifor_mod_helpers_get_argument_value
+
+
 end module test_clifor_mod_helpers
