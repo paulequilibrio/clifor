@@ -151,6 +151,7 @@ contains
           call clifor_stop
         end if
 
+        allocate(character(1) :: value)
         value = clifor_get_argument(index + 1)
 
         if (value(1:1) == '-') then
@@ -159,6 +160,7 @@ contains
         end if
 
         call option%set_value(value)
+        deallocate(value)
         index = index + 2
       else
         index = index + 1
