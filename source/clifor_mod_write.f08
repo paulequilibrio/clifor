@@ -50,7 +50,7 @@ contains
 
   subroutine clifor_write_warning(message)
     character(len=*), intent(in) :: message
-    call clifor_write_stdout('[ WARNING ] '//message)
+    call clifor_write_stderr('[ WARNING ] '//message)
   end subroutine clifor_write_warning
 
   subroutine clifor_write_error(message)
