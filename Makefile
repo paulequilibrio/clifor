@@ -4,9 +4,7 @@ build = ../build
 fc = gfortran
 # Fortran Compiler flags
 # -J specifies where to put .mod files for compiled modules
-development_flags = -J$(build) -std=f2008 -pedantic -Wall -Wextra -Wimplicit-interface -fPIC -fmax-errors=1 -g -fcheck=all -fbacktrace
-production_flags  = -J$(build) -std=f2008 -pedantic -Wall -Wextra -Wimplicit-interface -fPIC -Werror -fmax-errors=1 -O3 -march=native -ffast-math -funroll-loops
-flags = $(production_flags)
+clifor_flags  = -J$(build) -std=f2008 -pedantic -Wall -Wextra -Wimplicit-interface -fPIC -Werror -fmax-errors=1 -O3 -march=native -ffast-math -funroll-loops
 
 # If not exist, create build directory
 $(shell mkdir -p $(build))
@@ -21,7 +19,7 @@ default: $(clifor.obj)
 
 # Compile clifor files
 $(build)/%.o: source/%.f08
-	$(fc) $(flags) -c $(<) -o $(@)
+	$(fc) $(clifor_flags) -c $(<) -o $(@)
 
 clean:
 	rm -rf $(build)
