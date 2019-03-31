@@ -58,4 +58,9 @@ contains
     call clifor_write_stderr('[ ERROR ] '//message)
   end subroutine clifor_write_error
 
+  subroutine clifor_write_progress(message)
+    character(len=*), intent(in) :: message
+    call clifor_write_stdout('[ PROGRESS ] '//message)
+  end subroutine clifor_write_progress
+
 end module clifor_mod_write
