@@ -60,7 +60,7 @@ contains
 
   subroutine clifor_write_progress(message)
     character(len=*), intent(in) :: message
-    call clifor_write_stdout('[ PROGRESS ] '//message)
+    write(output_unit, '(1a1, a)', advance='no') achar(13), '[ PROGRESS ] '//message
   end subroutine clifor_write_progress
 
 end module clifor_mod_write
